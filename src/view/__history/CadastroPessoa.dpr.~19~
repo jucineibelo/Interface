@@ -1,0 +1,17 @@
+program CadastroPessoa;
+
+uses
+  Vcl.Forms,
+  view.padrao in 'view.padrao.pas' {frmPadrao},
+  pessoa in '..\controler\pessoa.pas',
+  view.pessoa in 'view.pessoa.pas' {frmCadastroPessoa},
+  dm.connection in '..\model\dm.connection.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmCadastroPessoa, frmCadastroPessoa);
+  Application.Run;
+end.

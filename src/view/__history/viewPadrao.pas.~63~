@@ -1,0 +1,156 @@
+﻿unit viewPadrao;
+
+interface
+
+uses
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Data.DB,
+  Vcl.Mask,
+  Vcl.DBCtrls,
+  Vcl.WinXPanels,
+  Vcl.Buttons,
+  Vcl.Grids,
+  Vcl.DBGrids,
+  FireDAC.Comp.Client,
+  FireDAC.DApt,
+  FireDAC.Stan.Def,
+  FireDAC.Stan.ExprFuncs,
+  FireDAC.Phys.SQLiteWrapper.Stat,
+  FireDAC.UI.Intf,
+  FireDAC.VCLUI.Wait,
+  FireDAC.Stan.Intf,
+  FireDAC.Phys,
+  dmConnection;
+
+type
+  TfrmPadrao = class(TForm)
+    pnlFundo: TPanel;
+    CardPanel1: TCardPanel;
+    viewDados: TCard;
+    viewPesquisa: TCard;
+    pnlTitulo: TPanel;
+    lblTitulo: TLabel;
+    pnlPesquisa: TPanel;
+    edtPesquisa: TEdit;
+    btnPesquisa: TSpeedButton;
+    lblConsulta: TLabel;
+    dbgrdPesquisa: TDBGrid;
+    pnlBtns: TPanel;
+    btnExcluir: TSpeedButton;
+    btnSalvar: TSpeedButton;
+    btnEditar: TSpeedButton;
+    btnNovo: TSpeedButton;
+    btnCancelar: TSpeedButton;
+    pnlSuporte: TPanel;
+    pnlFechar: TPanel;
+    btnSair: TSpeedButton;
+    pnl: TPanel;
+    pnl1: TPanel;
+    btnSair1: TSpeedButton;
+    dsPadrao: TDataSource;
+    procedure btnNovoClick(Sender: TObject);
+    procedure btnSairClick(Sender: TObject);
+    procedure OpenConnection;
+    procedure FormCreate(Sender: TObject);
+    procedure btnEditarClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure ActiveButtons(Sender: TObject);
+  private
+    function QryConnection: TDataModule1;
+  public
+  end;
+
+var
+  frmPadrao: TfrmPadrao;
+
+implementation
+
+uses
+  singletonConexao;
+
+{$R *.dfm}
+
+procedure TfrmPadrao.ActiveButtons(Sender: TObject);
+begin
+  btnNovo.Enabled     := not (dsPadrao.State in [dsInsert, dsEdit]);
+  btnEditar.Enabled   := btnNovo.Enabled and (dsPadrao.DataSet.RecordCount > 0);
+  btnSalvar.Enabled   := dsPadrao.State in [dsInsert, dsEdit];
+  btnCancelar.Enabled := btnSalvar.Enabled;
+  btnExcluir.Enabled  := btnEditar.Enabled;
+end;
+
+procedure TfrmPadrao.btnCancelarClick(Sender: TObject);
+begin
+  dsPadrao.DataSet.Cancel;
+end;
+
+procedure TfrmPadrao.btnEditarClick(Sender: TObject);
+begin
+  dsPadrao.DataSet.Edit;
+end;
+
+procedure TfrmPadrao.btnExcluirClick(Sender: TObject);
+begin
+  dsPadrao.DataSet.Delete;
+end;
+
+procedure TfrmPadrao.btnNovoClick(Sender: TObject);
+begin
+  CardPanel1.ActiveCard := viewDados;
+  OpenConnection;
+  dsPadrao.DataSet.Insert;
+end;
+
+procedure TfrmPadrao.btnSairClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TfrmPadrao.btnSalvarClick(Sender: TObject);
+begin
+  dsPadrao.DataSet.Post;
+  CardPanel1.ActiveCard := viewPesquisa;
+end;
+
+procedure TfrmPadrao.FormCreate(Sender: TObject);
+begin
+  CardPanel1.ActiveCard := viewPesquisa;
+  OpenConnection;
+  ActiveButtons(Self);
+end;
+
+procedure TfrmPadrao.OpenConnection;
+begin
+  if not dsPadrao.DataSet.Active then
+  begin
+    dsPadrao.DataSet.Open;
+  end;
+end;
+
+procedure TfrmPadrao.QryConnection: TDataModule1;
+var
+  conexao: TDataModule1;
+begin
+  conexao := TDataModule1.Create(nil);
+  try
+    Result:= Self;
+
+  finally
+
+  end;
+end;
+
+end.
+

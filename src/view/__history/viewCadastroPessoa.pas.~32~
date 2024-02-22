@@ -1,0 +1,89 @@
+unit viewCadastroPessoa;
+
+interface
+
+uses
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Data.DB,
+  Vcl.Mask,
+  Vcl.DBCtrls,
+  Vcl.WinXPanels,
+  Vcl.Buttons, Vcl.Grids, Vcl.DBGrids;
+
+type
+  TfrmCadastroPessoa = class(TForm)
+    pnlFundo: TPanel;
+    CardPanel1: TCardPanel;
+    viewDados: TCard;
+    viewPesquisa: TCard;
+    pnlTitulo: TPanel;
+    lblTitulo: TLabel;
+    lblNome: TLabel;
+    lblDataCadastro: TLabel;
+    lblTelefone: TLabel;
+    lblEndereco: TLabel;
+    edtNome: TEdit;
+    edtDataCadastro: TEdit;
+    edtTefone: TEdit;
+    edtEndereco: TEdit;
+    pnlPesquisa: TPanel;
+    edtPesquisa: TEdit;
+    btnPesquisa: TSpeedButton;
+    lblConsulta: TLabel;
+    dbgrdPesquisa: TDBGrid;
+    pnlBtns: TPanel;
+    btnExcluir: TSpeedButton;
+    btnSalvar: TSpeedButton;
+    btnEditar: TSpeedButton;
+    btnNovo: TSpeedButton;
+    btnCancelar: TSpeedButton;
+    pnlSuporte: TPanel;
+    pnlFechar: TPanel;
+    btnSair: TSpeedButton;
+    pnl: TPanel;
+    pnl1: TPanel;
+    btnSair1: TSpeedButton;
+    procedure btnNovoClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure btnSairClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmCadastroPessoa: TfrmCadastroPessoa;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmCadastroPessoa.btnNovoClick(Sender: TObject);
+begin
+  CardPanel1.ActiveCard := viewDados;
+
+end;
+
+procedure TfrmCadastroPessoa.btnSairClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TfrmCadastroPessoa.FormShow(Sender: TObject);
+begin
+  CardPanel1.ActiveCard := viewPesquisa;
+end;
+
+end.
+
