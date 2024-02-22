@@ -11,9 +11,11 @@ object frmPadrao: TfrmPadrao
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  OldCreateOrder = True
   Position = poDefault
   WindowState = wsMaximized
   OnCreate = FormCreate
+  PixelsPerInch = 96
   TextHeight = 15
   object pnlFundo: TPanel
     Left = 0
@@ -55,8 +57,8 @@ object frmPadrao: TfrmPadrao
             AlignWithMargins = True
             Left = 0
             Top = 33
-            Width = 213
-            Height = 32
+            Width = 902
+            Height = 56
             Margins.Left = 0
             Margins.Right = 0
             Margins.Bottom = 0
@@ -71,6 +73,8 @@ object frmPadrao: TfrmPadrao
             Font.Style = [fsBold]
             ParentColor = False
             ParentFont = False
+            ExplicitWidth = 213
+            ExplicitHeight = 32
           end
           object pnlSuporte: TPanel
             Left = 0
@@ -320,7 +324,6 @@ object frmPadrao: TfrmPadrao
               Align = alRight
               BevelOuter = bvNone
               TabOrder = 0
-              ExplicitHeight = 30
               object btnSair1: TSpeedButton
                 Left = 0
                 Top = 0
@@ -422,6 +425,8 @@ object frmPadrao: TfrmPadrao
           Align = alClient
           BorderStyle = bsNone
           DataSource = dsPadrao
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          ReadOnly = True
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText

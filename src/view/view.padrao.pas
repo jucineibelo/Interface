@@ -25,7 +25,6 @@ uses
   FireDAC.DApt,
   FireDAC.Stan.Def,
   FireDAC.Stan.ExprFuncs,
-  FireDAC.Phys.SQLiteWrapper.Stat,
   FireDAC.UI.Intf,
   FireDAC.VCLUI.Wait,
   FireDAC.Stan.Intf,

@@ -1,11 +1,10 @@
 object Connection: TConnection
+  OldCreateOrder = True
   Height = 273
   Width = 446
   object FDConnection: TFDConnection
     Params.Strings = (
-      
-        'Database=C:\Users\User-J\Desktop\Projetos Delphi\Interface Pesso' +
-        'a\db\Dados.db'
+      'Database=C:\Users\jucinei.belo\Desktop\Interfaces\db\Dados.db'
       'LockingMode=Normal'
       'DriverID=SQLite')
     LoginPrompt = False
@@ -40,7 +39,6 @@ object Connection: TConnection
       FieldName = 'id'
       Origin = 'id'
       ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = False
     end
     object qryPessoanome: TWideStringField
       FieldName = 'nome'

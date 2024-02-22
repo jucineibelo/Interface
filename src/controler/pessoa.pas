@@ -16,23 +16,23 @@ type
     function GetEndereco: string;
 
     //PUT
-    procedure PutId(const Value: Integer);
-    procedure PutNome(const Value: string);
-    procedure PutDataCadastro(const Value: TDateTime);
-    procedure PutTelefone(const Value: string);
-    procedure PutEndereco(const Value: string);
+    procedure PutId(const AValue: Integer);
+    procedure PutNome(const AValue: string);
+    procedure PutDataCadastro(const AValue: TDateTime);
+    procedure PutTelefone(const AValue: string);
+    procedure PutEndereco(const AValue: string);
 
     //SET
-    function SetId(Value: Integer): IPessoa;
-    function SetNome(const Value: string): IPessoa;
-    function SetDataCadastro(const Value: TDateTime): IPessoa;
-    function SetTelefone(const Value: string): IPessoa;
-    function SetEndereco(const Value: string): IPessoa;
+    function SetId(AValue: Integer): IPessoa;
+    function SetNome(const AValue: string): IPessoa;
+    function SetDataCadastro(const AValue: TDateTime): IPessoa;
+    function SetTelefone(const AValue: string): IPessoa;
+    function SetEndereco(const AValue: string): IPessoa;
 
     //CRUD
     function Delete(Id: Integer): IPessoa;
     function Update(Id: Integer): IPessoa;
-    function Find(Value: string): IPessoa;
+    function Find(AValue: string): IPessoa;
     function Insert: IPessoa;
     function Load: IPessoa;
 
@@ -61,30 +61,30 @@ type
     function GetEndereco: string;
 
     //PUT
-    procedure PutId(const Value: Integer);
-    procedure PutNome(const Value: string);
-    procedure PutDataCadastro(const Value: TDateTime);
-    procedure PutTelefone(const Value: string);
-    procedure PutEndereco(const Value: string);
+    procedure PutId(const AValue: Integer);
+    procedure PutNome(const AValue: string);
+    procedure PutDataCadastro(const AValue: TDateTime);
+    procedure PutTelefone(const AValue: string);
+    procedure PutEndereco(const AValue: string);
 
   public
     constructor Create;
     destructor Destroy; override;
-    class function New: IPessoa;
+    class function Instance: IPessoa;
 
     //CRUD
-    function Delete(Id: Integer): IPessoa;
-    function Update(Id: Integer): IPessoa;
-    function Find(Value: string): IPessoa;
-    function Insert: IPessoa;
-    function Load: IPessoa;
+    function Delete(Id: Integer): IPessoa; reintroduce;
+    function Update(Id: Integer): IPessoa; reintroduce;
+    function Find(AValue: string): IPessoa; reintroduce;
+    function Insert: IPessoa; reintroduce;
+    function Load: IPessoa; reintroduce;
 
     //SET
-    function SetId(Value: Integer): IPessoa;
-    function SetNome(const Value: string): IPessoa;
-    function SetDataCadastro(const Value: TDateTime): IPessoa;
-    function SetTelefone(const Value: string): IPessoa;
-    function SetEndereco(const Value: string): IPessoa;
+    function SetId(AValue: Integer): IPessoa; reintroduce;
+    function SetNome(const AValue: string): IPessoa; reintroduce;
+    function SetDataCadastro(const AValue: TDateTime): IPessoa; reintroduce;
+    function SetTelefone(const AValue: string): IPessoa; reintroduce;
+    function SetEndereco(const AValue: string): IPessoa; reintroduce;
 
   published
     property Id: Integer read GetId write PutId;
@@ -129,7 +129,7 @@ begin
   Connection.qryPessoa.ExecSQL;
 end;
 
-function TPessoa.Find(Value: string): IPessoa;
+function TPessoa.Find(AValue: string): IPessoa;
 const
   SQL_FIND_PESSOA = ' select id, nome, datacadastro, telefone, endereco ' +
                     ' from pessoa                                       ' +
@@ -139,7 +139,7 @@ const
 begin
   Result := Self;
 
-  if Value.IsEmpty then
+  if AValue.IsEmpty then
   begin
     raise Exception.Create('Campo pesquisa está vazio!');
   end;
@@ -147,9 +147,9 @@ begin
   Connection.qryPessoa.Close;
   Connection.qryPessoa.SQL.Clear;
   Connection.qryPessoa.SQL.Add(SQL_FIND_PESSOA);
-  Connection.qryPessoa.ParamByName('nome').AsString     := Value;
-  Connection.qryPessoa.ParamByName('telefone').AsString := Value;
-  Connection.qryPessoa.ParamByName('endereco').AsString := Value;
+  Connection.qryPessoa.ParamByName('nome').AsString     := AValue;
+  Connection.qryPessoa.ParamByName('telefone').AsString := AValue;
+  Connection.qryPessoa.ParamByName('endereco').AsString := AValue;
   Connection.qryPessoa.Open;
 end;
 
@@ -204,88 +204,88 @@ begin
   Connection.qryPessoa.Open;
 end;
 
-class function TPessoa.New: IPessoa;
+class function TPessoa.Instance: IPessoa;
 begin
   Result := Self.Create;
 end;
 
-procedure TPessoa.PutNome(const Value: string);
+procedure TPessoa.PutNome(const AValue: string);
 begin
-  if FNome = Value then
+  if FNome = AValue then
   begin
     Exit;
   end;
 
-  FNome := Value;
+  FNome := AValue;
 end;
 
-procedure TPessoa.PutDataCadastro(const Value: TDateTime);
+procedure TPessoa.PutDataCadastro(const AValue: TDateTime);
 begin
-  if FDataCadastro = Value then
+  if FDataCadastro = AValue then
   begin
     Exit;
   end;
 
-  FDataCadastro := Value;
+  FDataCadastro := AValue;
 end;
 
-procedure TPessoa.PutTelefone(const Value: string);
+procedure TPessoa.PutTelefone(const AValue: string);
 begin
-  if FTelefone = Value then
+  if FTelefone = AValue then
   begin
     Exit;
   end;
 
-  FTelefone := Value;
+  FTelefone := AValue;
 end;
 
-procedure TPessoa.PutEndereco(const Value: string);
+procedure TPessoa.PutEndereco(const AValue: string);
 begin
-  if FEndereco = Value then
+  if FEndereco = AValue then
   begin
     Exit;
   end;
 
-  FEndereco := Value;
+  FEndereco := AValue;
 end;
 
-procedure TPessoa.PutId(const Value: Integer);
+procedure TPessoa.PutId(const AValue: Integer);
 begin
-  if FId = Value then
+  if FId = AValue then
   begin
     Exit;
   end;
 
-  FId := Value;
+  FId := AValue;
 end;
 
-function TPessoa.SetDataCadastro(const Value: TDateTime): IPessoa;
+function TPessoa.SetDataCadastro(const AValue: TDateTime): IPessoa;
 begin
-  PutDataCadastro(Value);
+  PutDataCadastro(AValue);
   Result := Self;
 end;
 
-function TPessoa.SetEndereco(const Value: string): IPessoa;
+function TPessoa.SetEndereco(const AValue: string): IPessoa;
 begin
-  PutEndereco(Value);
+  PutEndereco(AValue);
   Result := Self;
 end;
 
-function TPessoa.SetId(Value: Integer): IPessoa;
+function TPessoa.SetId(AValue: Integer): IPessoa;
 begin
-  PutId(Value);
+  PutId(AValue);
   Result := Self;
 end;
 
-function TPessoa.SetNome(const Value: string): IPessoa;
+function TPessoa.SetNome(const AValue: string): IPessoa;
 begin
-  PutNome(Value);
+  PutNome(AValue);
   Result := Self;
 end;
 
-function TPessoa.SetTelefone(const Value: string): IPessoa;
+function TPessoa.SetTelefone(const AValue: string): IPessoa;
 begin
-  PutTelefone(Value);
+  PutTelefone(AValue);
   Result := Self;
 end;
 

@@ -16,7 +16,6 @@ uses
   FireDAC.Phys,
   FireDAC.VCLUI.Wait,
   FireDAC.Stan.ExprFuncs,
-  FireDAC.Phys.SQLiteWrapper.Stat,
   FireDAC.Phys.SQLiteDef,
   FireDAC.Phys.SQLite,
   FireDAC.Comp.UI,

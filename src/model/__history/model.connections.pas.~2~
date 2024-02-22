@@ -1,0 +1,19 @@
+unit model.connections;
+
+interface
+
+type
+  TDataConnection = class
+    strict private
+
+    public
+
+    published
+
+
+
+  end;
+
+implementation
+
+end.

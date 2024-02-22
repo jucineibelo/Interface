@@ -137,7 +137,7 @@ end;
 procedure TfrmCadastroPessoa.FormCreate(Sender: TObject);
 begin
   inherited;
-  FPessoa := TPessoa.New;
+  FPessoa := TPessoa.Instance;
   FPessoa.Load;
 end;
 
