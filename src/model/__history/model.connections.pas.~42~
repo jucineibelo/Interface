@@ -18,11 +18,16 @@ type
     destructor Destroy; override;
     function Connect: Boolean;
     procedure Disconnect;
+    //Get
+    function GetConnection: TFDConnection;
     function GetDatabase: string;
     function GetDriverId: string;
+    //Set
     procedure SetDatabase(const Value: string);
     procedure SetDriverId(const Value: string);
+    procedure ConnectCursorAndDriver;
 
+    property Connection: TFDConnection read GetConnection;
     property Database: string read GetDatabase write SetDatabase;
     property DriverId: string read GetDriverId write SetDriverId;
   end;
@@ -30,14 +35,27 @@ type
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  FireDAC.Comp.UI,
+  FireDAC.Phys.SQLite;
+
 { TMyConnection }
+
+procedure TDataConnection.ConnectCursorAndDriver;
+var
+  Cursor : TFDGUIxWaitCursor;
+  Driver : TFDPhysSQLiteDriverLink;
+begin
+  Cursor := TFDGUIxWaitCursor.Create(nil);
+  Driver := TFDPhysSQLiteDriverLink.Create(nil);
+end;
 
 constructor TDataConnection.Create;
 begin
   FDriverId := EmptyStr;
   FDatabase := EmptyStr;
-  FConnection := FConnection.Create(nil);
+  FConnection := TFDConnection.Create(nil);
+  ConnectCursorAndDriver;
 end;
 
 destructor TDataConnection.Destroy;
@@ -64,6 +82,11 @@ end;
 procedure TDataConnection.Disconnect;
 begin
   FConnection.Connected := False;
+end;
+
+function TDataConnection.GetConnection: TFDConnection;
+begin
+  Result := Self.FConnection;
 end;
 
 function TDataConnection.GetDatabase: string;

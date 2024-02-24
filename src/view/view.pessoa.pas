@@ -137,9 +137,7 @@ var
 begin
   inherited;
   ObjectPessoa := TPessoa.Create;
-  ObjectPessoa.ConectarQryPessoa;
-
-  ObjectPessoa.Load;
+  dsPadrao.DataSet :=  ObjectPessoa.ConectarQryPessoa;
 end;
 
 end.

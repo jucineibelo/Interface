@@ -56,9 +56,6 @@ var
 
 implementation
 
-uses
-  dm.connection;
-
 {$R *.dfm}
 
 procedure TfrmCadastroPessoa.btnCancelarClick(Sender: TObject);
@@ -140,7 +137,7 @@ var
 begin
   inherited;
   ObjectPessoa := TPessoa.Create;
-  dsPadrao.DataSet := ObjectPessoa.ConectarQryPessoa;
+  dsPadrao.DataSet :=  ObjectPessoa.ConectarQryPessoa;
 
 end;
 

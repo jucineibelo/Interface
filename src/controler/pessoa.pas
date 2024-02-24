@@ -127,7 +127,8 @@ begin
   QryPessoa := TFDQuery.Create(nil);
   try
     QryPessoa.Connection := ConectarBase.Connection;
-
+    QryPessoa.SQL.Text := 'SELECT id, nome, datacadastro, telefone, endereco FROM pessoa';
+    QryPessoa.Open;
     Result := QryPessoa;
   except
     on E: Exception do

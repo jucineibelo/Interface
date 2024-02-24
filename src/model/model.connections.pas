@@ -39,15 +39,12 @@ uses
   FireDAC.Comp.UI,
   FireDAC.Phys.SQLite;
 
-{ TMyConnection }
+{ TDataConnection }
 
 procedure TDataConnection.ConnectCursorAndDriver;
-var
-  Cursor : TFDGUIxWaitCursor;
-  Driver : TFDPhysSQLiteDriverLink;
 begin
-  Cursor := TFDGUIxWaitCursor.Create(nil);
-  Driver := TFDPhysSQLiteDriverLink.Create(nil);
+  TFDGUIxWaitCursor.Create(nil);
+  TFDPhysSQLiteDriverLink.Create(nil);
 end;
 
 constructor TDataConnection.Create;
