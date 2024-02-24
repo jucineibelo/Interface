@@ -10,38 +10,52 @@ type
   TDataConnection = class
   private
     FConnection: TFDConnection;
-    FHostName: string;
     FDatabase: string;
-    FUserName: string;
-    FPassword: string;
+    FDriverId: string;
   public
-    constructor Create(const HostName, Database, UserName, Password: string);
+    class function Instance: TDataConnection;
+    constructor Create;
     destructor Destroy; override;
-
     function Connect: Boolean;
     procedure Disconnect;
+    //Get
+    function GetConnection: TFDConnection;
+    function GetDatabase: string;
+    function GetDriverId: string;
+    //Set
+    procedure SetDatabase(const Value: string);
+    procedure SetDriverId(const Value: string);
+    procedure ConnectCursorAndDriver;
 
-    function Execute(const SQL: string): Boolean;
-    function Query(const SQL: string; DataSet: TDataSet): Boolean;
-
-    property HostName: string read FHostName write FHostName;
-    property Database: string read FDatabase write FDatabase;
-    property UserName: string read FUserName write FUserName;
-    property Password: string read FPassword write FPassword;
+    property Connection: TFDConnection read GetConnection;
+    property Database: string read GetDatabase write SetDatabase;
+    property DriverId: string read GetDriverId write SetDriverId;
   end;
 
 implementation
 
+uses
+  System.SysUtils,
+  FireDAC.Comp.UI,
+  FireDAC.Phys.SQLite;
+
 { TMyConnection }
 
-constructor TDataConnection.Create(const HostName, Database, UserName, Password: string);
+procedure TDataConnection.ConnectCursorAndDriver;
+var
+  Cursor : TFDGUIxWaitCursor;
+  Driver : TFDPhysSQLiteDriverLink;
 begin
-  inherited Create;
+  Cursor := TFDGUIxWaitCursor.Create(nil);
+  Driver := TFDPhysSQLiteDriverLink.Create(nil);
+end;
+
+constructor TDataConnection.Create;
+begin
+  FDriverId := EmptyStr;
+  FDatabase := EmptyStr;
   FConnection := TFDConnection.Create(nil);
-  FHostName := HostName;
-  FDatabase := Database;
-  FUserName := UserName;
-  FPassword := Password;
+  ConnectCursorAndDriver;
 end;
 
 destructor TDataConnection.Destroy;
@@ -54,10 +68,8 @@ end;
 function TDataConnection.Connect: Boolean;
 begin
   FConnection.Params.Clear;
-  FConnection.Params.Add('HostName=' + FHostName);
+  FConnection.DriverName := FDriverId;
   FConnection.Params.Add('Database=' + FDatabase);
-  FConnection.Params.Add('User_Name=' + FUserName);
-  FConnection.Params.Add('Password=' + FPassword);
   FConnection.LoginPrompt := False;
   try
     FConnection.Connected := True;
@@ -72,35 +84,34 @@ begin
   FConnection.Connected := False;
 end;
 
-function TDataConnection.Execute(const SQL: string): Boolean;
+function TDataConnection.GetConnection: TFDConnection;
 begin
-  Result := False;
-  if Connect then
-  begin
-    try
-      //FConnection.Execute(SQL, nil, []);
-      Result := True;
-    except
-      // Tratar erros de execução da query
-    end;
-    Disconnect;
-  end;
+  Result := Self.FConnection;
 end;
 
-function TDataConnection.Query(const SQL: string; DataSet: TDataSet): Boolean;
+function TDataConnection.GetDatabase: string;
 begin
-  Result := False;
-  if Connect then
-  begin
-    try
-      DataSet.Close;
-      //DataSet.CommandText := SQL;
-      DataSet.Open;
-      Result := True;
-    except
-      // Tratar erros de execução da query
-    end;
-  end;
+  Result := FDatabase;
+end;
+
+function TDataConnection.GetDriverId: string;
+begin
+  Result := FDriverId;
+end;
+
+class function TDataConnection.Instance: TDataConnection;
+begin
+  Result := Self.Create;
+end;
+
+procedure TDataConnection.SetDatabase(const Value: string);
+begin
+  FDatabase := Value;
+end;
+
+procedure TDataConnection.SetDriverId(const Value: string);
+begin
+  FDriverId := Value;
 end;
 
 end.

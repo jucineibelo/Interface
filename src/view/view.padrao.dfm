@@ -11,11 +11,9 @@ object frmPadrao: TfrmPadrao
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  OldCreateOrder = True
   Position = poDefault
   WindowState = wsMaximized
   OnCreate = FormCreate
-  PixelsPerInch = 96
   TextHeight = 15
   object pnlFundo: TPanel
     Left = 0

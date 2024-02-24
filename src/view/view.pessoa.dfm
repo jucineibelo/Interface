@@ -1,10 +1,13 @@
 inherited frmCadastroPessoa: TfrmCadastroPessoa
   Caption = 'frmCadastroPessoa'
-  PixelsPerInch = 96
+  StyleElements = [seFont, seClient, seBorder]
   TextHeight = 15
   inherited pnlFundo: TPanel
+    StyleElements = [seFont, seClient, seBorder]
     inherited CardPanel1: TCardPanel
+      StyleElements = [seFont, seClient, seBorder]
       inherited viewDados: TCard
+        StyleElements = [seFont, seClient, seBorder]
         object lblCodigo: TLabel [0]
           Left = 48
           Top = 128
@@ -41,9 +44,17 @@ inherited frmCadastroPessoa: TfrmCadastroPessoa
           Caption = 'Endere'#231'o'
         end
         inherited pnlTitulo: TPanel
+          StyleElements = [seFont, seClient, seBorder]
           inherited lblTitulo: TLabel
             Caption = 'Cadastro de Pessoas'
-            ExplicitWidth = 902
+            StyleElements = [seFont, seClient, seBorder]
+            ExplicitWidth = 221
+          end
+          inherited pnlSuporte: TPanel
+            StyleElements = [seFont, seClient, seBorder]
+            inherited pnlFechar: TPanel
+              StyleElements = [seFont, seClient, seBorder]
+            end
           end
         end
         object edtCodigo: TEdit
@@ -85,17 +96,27 @@ inherited frmCadastroPessoa: TfrmCadastroPessoa
         end
       end
       inherited viewPesquisa: TCard
+        StyleElements = [seFont, seClient, seBorder]
         inherited pnlPesquisa: TPanel
+          StyleElements = [seFont, seClient, seBorder]
           inherited btnPesquisa: TSpeedButton
             OnClick = btnPesquisaClick
           end
           inherited lblConsulta: TLabel
             Caption = 'Consulta de Pessoas'
             Color = 15592924
+            StyleElements = [seFont, seClient, seBorder]
             ExplicitWidth = 185
           end
           inherited edtPesquisa: TEdit
+            StyleElements = [seFont, seClient, seBorder]
             OnKeyPress = edtPesquisaKeyPress
+          end
+          inherited pnl: TPanel
+            StyleElements = [seFont, seClient, seBorder]
+            inherited pnl1: TPanel
+              StyleElements = [seFont, seClient, seBorder]
+            end
           end
         end
         inherited dbgrdPesquisa: TDBGrid
@@ -137,8 +158,8 @@ inherited frmCadastroPessoa: TfrmCadastroPessoa
         end
       end
     end
-  end
-  inherited dsPadrao: TDataSource
-    DataSet = Connection.qryPessoa
+    inherited pnlBtns: TPanel
+      StyleElements = [seFont, seClient, seBorder]
+    end
   end
 end

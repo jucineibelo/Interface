@@ -75,7 +75,6 @@ var
 implementation
 
 uses
-  dm.connection,
   System.UITypes;
 
 {$R *.dfm}
