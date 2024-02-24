@@ -35,6 +35,7 @@ type
     function Find(AValue: string): IPessoa;
     function Insert: IPessoa;
     function Load: IPessoa;
+    function ConectarQryPessoa: TFDQuery;
 
     //Propertys
     property Nome: string read GetNome write PutNome;
@@ -114,7 +115,7 @@ function TPessoa.ConectarQryPessoa: TFDQuery;
     conexao: TDataconnection;
   begin
     conexao := TDataConnection.Create;
-    conexao.SetDatabase('C:\Users\User-J\Desktop\Projetos Delphi\Interface Pessoa\db.Dados.db');
+    conexao.SetDatabase('C:\Users\User-J\Desktop\Projetos Delphi\Interface Pessoa\db\Dados.db');
     conexao.SetDriverId('SQLite');
     conexao.Connect;
 
