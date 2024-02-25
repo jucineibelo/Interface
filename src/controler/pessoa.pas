@@ -3,7 +3,8 @@ unit pessoa;
 interface
 
 uses
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client,
+  Data.DB;
 
 type
   IPessoa = interface
@@ -32,7 +33,7 @@ type
     //CRUD
     function Delete(Id: Integer): IPessoa;
     function Update(Id: Integer): IPessoa;
-    function Find(AValue: string): IPessoa;
+    function Find(AValue: string): TDataset;
     function Insert: IPessoa;
     function Load: TFDQuery;
     function QryConnection: TFDQuery;
@@ -77,7 +78,7 @@ type
     //CRUD
     function Delete(Id: Integer): IPessoa; reintroduce;
     function Update(Id: Integer): IPessoa; reintroduce;
-    function Find(AValue: string): IPessoa; reintroduce;
+    function Find(AValue: string): TDataSet; reintroduce;
     function Insert: IPessoa; reintroduce;
     function Load: TFDQuery; reintroduce;
     function QryConnection: TFDQuery; reintroduce;
@@ -126,7 +127,7 @@ function TPessoa.QryConnection: TFDQuery;
 begin
   Result := TFDQuery.Create(nil);
   try
-    Result.Connection :=  BaseConnection.Connection;
+    Result.Connection := BaseConnection.Connection;
   except
     on E: Exception do
     begin
@@ -162,7 +163,7 @@ begin
   FQryPessoa.ExecSQL;
 end;
 
-function TPessoa.Find(AValue: string): IPessoa;
+function TPessoa.Find(AValue: string): TDataSet;
 const
   SQL_FIND_PESSOA = ' select id, nome, datacadastro, telefone, endereco ' +
                     ' from pessoa                                       ' +
@@ -170,8 +171,6 @@ const
                     ' or telefone like ''%''  || :telefone || ''%''     ' +
                     ' or endereco like ''%'' || :endereco || ''%''      ';
 begin
-  Result := Self;
-
   if AValue.IsEmpty then
   begin
     raise Exception.Create('Campo pesquisa está vazio!');
@@ -185,6 +184,8 @@ begin
   FQryPessoa.ParamByName('telefone').AsString := AValue;
   FQryPessoa.ParamByName('endereco').AsString := AValue;
   FQryPessoa.Open;
+
+  Result := FQryPessoa;
 end;
 
 function TPessoa.GetNome: string;
@@ -241,7 +242,6 @@ begin
     raise Exception.Create('Erro ao carregar dados');
   end;
 end;
-
 
 class function TPessoa.Instance: IPessoa;
 begin

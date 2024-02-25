@@ -126,7 +126,7 @@ function TPessoa.QryConnection: TFDQuery;
 begin
   Result := TFDQuery.Create(nil);
   try
-    Result.Connection :=  BaseConnection.Connection;
+    Result.Connection := BaseConnection.Connection;
   except
     on E: Exception do
     begin
@@ -164,9 +164,11 @@ end;
 
 function TPessoa.Find(AValue: string): IPessoa;
 const
-  SQL_FIND_PESSOA = 'SELECT id, nome, datacadastro, telefone, endereco ' +
-                    'FROM pessoa ' +
-                    'WHERE nome LIKE :param OR telefone LIKE :param OR endereco LIKE :param';
+  SQL_FIND_PESSOA = ' select id, nome, datacadastro, telefone, endereco ' +
+                    ' from pessoa                                       ' +
+                    ' where nome like ''%'' || :nome || ''%''           ' +
+                    ' or telefone like ''%''  || :telefone || ''%''     ' +
+                    ' or endereco like ''%'' || :endereco || ''%''      ';
 begin
   Result := Self;
 
@@ -179,10 +181,11 @@ begin
   FQryPessoa.Close;
   FQryPessoa.SQL.Clear;
   FQryPessoa.SQL.Add(SQL_FIND_PESSOA);
-  FQryPessoa.ParamByName('param').AsString := '%' + AValue + '%'; // Adicionei os coringas (%) para correspondência parcial
+  FQryPessoa.ParamByName('nome').AsString     := AValue;
+  FQryPessoa.ParamByName('telefone').AsString := AValue;
+  FQryPessoa.ParamByName('endereco').AsString := AValue;
   FQryPessoa.Open;
 end;
-
 
 function TPessoa.GetNome: string;
 begin
@@ -238,7 +241,6 @@ begin
     raise Exception.Create('Erro ao carregar dados');
   end;
 end;
-
 
 class function TPessoa.Instance: IPessoa;
 begin

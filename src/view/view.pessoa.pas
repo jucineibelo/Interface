@@ -75,7 +75,7 @@ procedure TfrmCadastroPessoa.btnExcluirClick(Sender: TObject);
 begin
   inherited;
   FPessoa.Delete(dsPadrao.DataSet.FieldByName('id').AsInteger);
-  dsPadrao.DataSet := FPessoa.Load;
+  CarregarDados;
 end;
 
 procedure TfrmCadastroPessoa.btnNovoClick(Sender: TObject);
@@ -88,7 +88,10 @@ end;
 procedure TfrmCadastroPessoa.btnPesquisaClick(Sender: TObject);
 begin
   inherited;
-  FPessoa.Find(edtPesquisa.Text);
+  case edtPesquisa.Text = EmptyStr of
+    True : CarregarDados;
+    False: dsPadrao.DataSet := FPessoa.Find(edtPesquisa.Text);
+  end;
 end;
 
 procedure TfrmCadastroPessoa.btnSalvarClick(Sender: TObject);
@@ -148,8 +151,6 @@ begin
   inherited;
   CarregarDados;
 end;
-
-
 
 end.
 

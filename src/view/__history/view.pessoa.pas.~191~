@@ -47,6 +47,7 @@ type
   private
     FPessoa: IPessoa;
     procedure ClearEdts;
+    procedure CarregarDados;
   public
     { Public declarations }
   end;
@@ -74,7 +75,7 @@ procedure TfrmCadastroPessoa.btnExcluirClick(Sender: TObject);
 begin
   inherited;
   FPessoa.Delete(dsPadrao.DataSet.FieldByName('id').AsInteger);
-  FPessoa.Load;
+  CarregarDados;
 end;
 
 procedure TfrmCadastroPessoa.btnNovoClick(Sender: TObject);
@@ -87,7 +88,7 @@ end;
 procedure TfrmCadastroPessoa.btnPesquisaClick(Sender: TObject);
 begin
   inherited;
-  FPessoa.Find(edtPesquisa.Text);
+  dsPadrao.DataSet := FPessoa.Find(edtPesquisa.Text);
 end;
 
 procedure TfrmCadastroPessoa.btnSalvarClick(Sender: TObject);
@@ -103,7 +104,7 @@ begin
   end;
 
   ClearEdts;
-  FPessoa.Load;
+  CarregarDados;
   inherited;
 end;
 
@@ -114,6 +115,12 @@ begin
   edtDataCadastro.Clear;
   edtTelefone.Clear;
   edtEndereco.Clear;  
+end;
+
+procedure TfrmCadastroPessoa.CarregarDados;
+begin
+  FPessoa := TPessoa.Instance;
+  dsPadrao.DataSet := FPessoa.Load;
 end;
 
 procedure TfrmCadastroPessoa.dbgrdPesquisaCellClick(Column: TColumn);
@@ -139,10 +146,8 @@ end;
 procedure TfrmCadastroPessoa.FormCreate(Sender: TObject);
 begin
   inherited;
-  dsPadrao.DataSet := TPessoa.Instance.Load;
+  CarregarDados;
 end;
-
-
 
 end.
 

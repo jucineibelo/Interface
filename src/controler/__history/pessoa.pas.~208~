@@ -3,7 +3,8 @@ unit pessoa;
 interface
 
 uses
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client,
+  Data.DB;
 
 type
   IPessoa = interface
@@ -32,10 +33,9 @@ type
     //CRUD
     function Delete(Id: Integer): IPessoa;
     function Update(Id: Integer): IPessoa;
-    function Find(AValue: string): IPessoa;
+    function Find(AValue: string): TDataset;
     function Insert: IPessoa;
-    function Load: IPessoa;
-    function QryConnectionPessoa: TFDQuery;
+    function Load: TFDQuery;
     function QryConnection: TFDQuery;
 
     //Propertys
@@ -54,7 +54,7 @@ type
     FDataCadastro: TDateTime;
     FTelefone: string;
     FEndereco: string;
-    FQry: TFDQuery;
+    FQryPessoa: TFDQuery;
 
     //GET
     function GetId: Integer;
@@ -78,11 +78,10 @@ type
     //CRUD
     function Delete(Id: Integer): IPessoa; reintroduce;
     function Update(Id: Integer): IPessoa; reintroduce;
-    function Find(AValue: string): IPessoa; reintroduce;
+    function Find(AValue: string): TDataSet; reintroduce;
     function Insert: IPessoa; reintroduce;
-    function Load: IPessoa; reintroduce;
-    function QryConnectionPessoa: TFDQuery;
-    function QryConnection: TFDQuery;
+    function Load: TFDQuery; reintroduce;
+    function QryConnection: TFDQuery; reintroduce;
 
     //SET
     function SetId(AValue: Integer): IPessoa; reintroduce;
@@ -97,7 +96,7 @@ type
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property Qry: TFDQuery read FQry write FQry;
+    property QryPessoa: TFDQuery read FQryPessoa write FQryPessoa;
   end;
 
 implementation
@@ -125,44 +124,10 @@ function TPessoa.QryConnection: TFDQuery;
     Result := conexao;
   end;
 
-var
-  QryPessoa: TFDQuery;
 begin
-  QryPessoa := TFDQuery.Create(nil);
+  Result := TFDQuery.Create(nil);
   try
-    QryPessoa.Connection := BaseConnection.Connection;
-    Result := QryPessoa;
-  except
-    on E: Exception do
-    begin
-      raise Exception.Create('Erro ao conectar ao banco de dados: ' + E.Message);
-    end;
-  end;
-end;
-
-function TPessoa.QryConnectionPessoa: TFDQuery;
-
-  function ConectarBase: TDataconnection;
-  var
-    conexao: TDataconnection;
-  begin
-    conexao := TDataConnection.Create;
-    conexao.SetDatabase('C:\Users\User-J\Desktop\Projetos Delphi\Delphi OI\Interface Pessoa\db\Dados.db');
-    conexao.SetDriverId('SQLite');
-    conexao.Connect;
-
-    Result := conexao;
-  end;
-
-var
-  QryPessoa: TFDQuery;
-begin
-  QryPessoa := TFDQuery.Create(nil);
-  try
-    QryPessoa.Connection := ConectarBase.Connection;
-    QryPessoa.SQL.Text := 'SELECT id, nome, datacadastro, telefone, endereco FROM pessoa';
-    QryPessoa.Open;
-    Result := QryPessoa;
+    Result.Connection := BaseConnection.Connection;
   except
     on E: Exception do
     begin
@@ -190,12 +155,12 @@ const
   SQL_DELETE_PESSOA = 'delete from pessoa where id =:id';
 begin
   Result := Self;
-  FQry := QryConnection;
-  FQry.Close;
-  FQry.SQL.Clear;
-  FQry.SQL.Add(SQL_DELETE_PESSOA);
-  FQry.ParamByName('id').AsInteger := Id;
-  FQry.ExecSQL;
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Add(SQL_DELETE_PESSOA);
+  FQryPessoa.ParamByName('id').AsInteger := Id;
+  FQryPessoa.ExecSQL;
 end;
 
 function TPessoa.Find(AValue: string): IPessoa;
@@ -213,13 +178,14 @@ begin
     raise Exception.Create('Campo pesquisa está vazio!');
   end;
 
-  QryConnectionPessoa.Close;
-  QryConnectionPessoa.SQL.Clear;
-  QryConnectionPessoa.SQL.Add(SQL_FIND_PESSOA);
-  QryConnectionPessoa.ParamByName('nome').AsString     := AValue;
-  QryConnectionPessoa.ParamByName('telefone').AsString := AValue;
-  QryConnectionPessoa.ParamByName('endereco').AsString := AValue;
-  QryConnectionPessoa.Open;
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Add(SQL_FIND_PESSOA);
+  FQryPessoa.ParamByName('nome').AsString     := AValue;
+  FQryPessoa.ParamByName('telefone').AsString := AValue;
+  FQryPessoa.ParamByName('endereco').AsString := AValue;
+  FQryPessoa.Open;
 end;
 
 function TPessoa.GetNome: string;
@@ -251,26 +217,30 @@ function TPessoa.Insert: IPessoa;
 const
   SQL_INSERT_PESSOA = 'INSERT INTO Pessoa(nome, dataCadastro, telefone, endereco) VALUES(:nome, :dataCadastro, :telefone, :endereco)';
 begin
-  QryConnectionPessoa.Close;
-  QryConnectionPessoa.SQL.Clear;
-  QryConnectionPessoa.SQL.Text := SQL_INSERT_PESSOA;
-  QryConnectionPessoa.Params.ParamByName('nome').AsString := Fnome;
-  QryConnectionPessoa.Params.ParamByName('DataCadastro').AsDate := FdataCadastro;
-  QryConnectionPessoa.Params.ParamByName('telefone').AsString := Ftelefone;
-  QryConnectionPessoa.Params.ParamByName('endereco').AsString := Fendereco;
-  QryConnectionPessoa.ExecSQL;
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Text := SQL_INSERT_PESSOA;
+  FQryPessoa.Params.ParamByName('nome').AsString := Fnome;
+  FQryPessoa.Params.ParamByName('DataCadastro').AsDate := FdataCadastro;
+  FQryPessoa.Params.ParamByName('telefone').AsString := Ftelefone;
+  FQryPessoa.Params.ParamByName('endereco').AsString := Fendereco;
+  FQryPessoa.ExecSQL;
 end;
 
-function TPessoa.Load: IPessoa;
+function TPessoa.Load: TFDQuery;
 const
-  SQL_LOAD_PESSOA = ' select id, nome, datacadastro, telefone, endereco ' +
-                    ' from pessoa                                       ';
+  SQL_LOAD_PESSOA = 'select id, nome, datacadastro, telefone, endereco from pessoa';
 begin
-  Result := Self;
-  QryConnectionPessoa.Close;
-  QryConnectionPessoa.SQL.Clear;
-  QryConnectionPessoa.SQL.Add(SQL_LOAD_PESSOA);
-  QryConnectionPessoa.Open;
+  try
+    Result := QryConnection;
+    Result.Close;
+    Result.SQL.Clear;
+    Result.SQL.Add(SQL_LOAD_PESSOA);
+    Result.Open;
+  except
+    raise Exception.Create('Erro ao carregar dados');
+  end;
 end;
 
 class function TPessoa.Instance: IPessoa;
@@ -363,15 +333,16 @@ const
   SQL_UPDATE_PESSOA = 'update pessoa set nome = :nome, datacadastro = :datacadastro, telefone = :telefone, endereco = :endereco where id = :id ';
 begin
   Result := Self;
-  QryConnectionPessoa.Close;
-  QryConnectionPessoa.SQL.Clear;
-  QryConnectionPessoa.SQL.Add(SQL_UPDATE_PESSOA);
-  QryConnectionPessoa.ParamByName('nome').AsString       := FNome;
-  QryConnectionPessoa.ParamByName('datacadastro').AsDate := FDataCadastro;
-  QryConnectionPessoa.ParamByName('telefone').AsString   := FTelefone;
-  QryConnectionPessoa.ParamByName('endereco').AsString   := FEndereco;
-  QryConnectionPessoa.ParamByName('id').AsInteger        := Id;
-  QryConnectionPessoa.ExecSQL;
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Add(SQL_UPDATE_PESSOA);
+  FQryPessoa.ParamByName('nome').AsString       := FNome;
+  FQryPessoa.ParamByName('datacadastro').AsDate := FDataCadastro;
+  FQryPessoa.ParamByName('telefone').AsString   := FTelefone;
+  FQryPessoa.ParamByName('endereco').AsString   := FEndereco;
+  FQryPessoa.ParamByName('id').AsInteger        := Id;
+  FQryPessoa.ExecSQL;
 end;
 
 end.
