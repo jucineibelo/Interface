@@ -46,6 +46,7 @@ inherited frmCadastroPessoa: TfrmCadastroPessoa
         inherited pnlTitulo: TPanel
           StyleElements = [seFont, seClient, seBorder]
           inherited lblTitulo: TLabel
+            Width = 221
             Caption = 'Cadastro de Pessoas'
             StyleElements = [seFont, seClient, seBorder]
             ExplicitWidth = 221

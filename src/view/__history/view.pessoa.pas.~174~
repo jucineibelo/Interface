@@ -44,11 +44,9 @@ type
     procedure btnPesquisaClick(Sender: TObject);
     procedure edtPesquisaKeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     FPessoa: IPessoa;
     procedure ClearEdts;
-    procedure LoadTablePessoa;
   public
     { Public declarations }
   end;
@@ -61,7 +59,8 @@ implementation
 uses
   FireDAC.Comp.Client,
   FireDAC.Comp.UI,
-  FireDAC.Phys.SQLite;
+  FireDAC.Phys.SQLite,
+  Firedac.Stan.Async;
 
 {$R *.dfm}
 
@@ -108,7 +107,6 @@ begin
   inherited;
 end;
 
-
 procedure TfrmCadastroPessoa.ClearEdts;
 begin
   edtCodigo.Clear;
@@ -116,28 +114,6 @@ begin
   edtDataCadastro.Clear;
   edtTelefone.Clear;
   edtEndereco.Clear;  
-end;
-
-procedure TfrmCadastroPessoa.LoadTablePessoa;
-var
-  Connection: TFDConnection;
-  QryPessoa: TFDQuery;
-begin
-  TFDGUIxWaitCursor.Create(nil);
-  TFDPhysSQLiteDriverLink.Create(nil);
-  Connection := TFDConnection.Create(nil);
-  Connection.Params.Clear;
-  Connection.DriverName := 'SQLite';
-  Connection.Params.Database := 'C:\Users\User-J\Desktop\Projetos Delphi\Interface Pessoa\Dados.db';
-  Connection.LoginPrompt := False;
-  Connection.Connected := True;
-  QryPessoa := TFDQuery.Create(Self);
-  QryPessoa.Connection := Connection;
-  QryPessoa.Close;
-  QryPessoa.SQL.Clear;
-  QryPessoa.SQL.Add('select * from pessoa');
-  QryPessoa.Open;
-  dsPadrao.DataSet := QryPessoa;
 end;
 
 procedure TfrmCadastroPessoa.dbgrdPesquisaCellClick(Column: TColumn);
@@ -163,14 +139,11 @@ end;
 procedure TfrmCadastroPessoa.FormCreate(Sender: TObject);
 begin
   inherited;
-  //LoadTablePessoa;
+  FPessoa := TPessoa.Instance;
+  dsPadrao.DataSet := FPessoa.Load;
 end;
 
-procedure TfrmCadastroPessoa.FormShow(Sender: TObject);
-begin
-  inherited;
-  LoadTablePessoa;
-end;
+
 
 end.
 

@@ -1,4 +1,4 @@
-﻿unit view.pessoa;
+unit view.pessoa;
 
 interface
 
@@ -37,16 +37,17 @@ type
     edtTelefone: TEdit;
     edtEndereco: TEdit;
     procedure btnNovoClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
     procedure dbgrdPesquisaCellClick(Column: TColumn);
     procedure btnExcluirClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure btnPesquisaClick(Sender: TObject);
     procedure edtPesquisaKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
-    FPessoa : IPessoa;
+    FPessoa: IPessoa;
     procedure ClearEdts;
+    procedure CarregarDados;
   public
     { Public declarations }
   end;
@@ -57,7 +58,10 @@ var
 implementation
 
 uses
-  dm.connection;
+  FireDAC.Comp.Client,
+  FireDAC.Comp.UI,
+  FireDAC.Phys.SQLite,
+  Firedac.Stan.Async;
 
 {$R *.dfm}
 
@@ -100,10 +104,9 @@ begin
   end;
 
   ClearEdts;
-  FPessoa.Load;
+  CarregarDados;
   inherited;
 end;
-
 
 procedure TfrmCadastroPessoa.ClearEdts;
 begin
@@ -112,6 +115,12 @@ begin
   edtDataCadastro.Clear;
   edtTelefone.Clear;
   edtEndereco.Clear;  
+end;
+
+procedure TfrmCadastroPessoa.CarregarDados;
+begin
+  FPessoa := TPessoa.Instance;
+  dsPadrao.DataSet := FPessoa.Load;
 end;
 
 procedure TfrmCadastroPessoa.dbgrdPesquisaCellClick(Column: TColumn);
@@ -135,16 +144,12 @@ begin
 end;
 
 procedure TfrmCadastroPessoa.FormCreate(Sender: TObject);
-var
-  teste: TPessoa;
 begin
   inherited;
-  teste := TPessoa.Create;
-  dsPadrao.DataSet := teste.ConectarQryPessoa;
-
-  FPessoa:= TPessoa.Instance;
-  FPessoa.Load;
+  CarregarDados;
 end;
+
+
 
 end.
 

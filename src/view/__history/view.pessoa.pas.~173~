@@ -44,11 +44,9 @@ type
     procedure btnPesquisaClick(Sender: TObject);
     procedure edtPesquisaKeyPress(Sender: TObject; var Key: Char);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     FPessoa: IPessoa;
     procedure ClearEdts;
-    procedure LoadTablePessoa;
   public
     { Public declarations }
   end;
@@ -109,7 +107,6 @@ begin
   inherited;
 end;
 
-
 procedure TfrmCadastroPessoa.ClearEdts;
 begin
   edtCodigo.Clear;
@@ -117,12 +114,6 @@ begin
   edtDataCadastro.Clear;
   edtTelefone.Clear;
   edtEndereco.Clear;  
-end;
-
-procedure TfrmCadastroPessoa.LoadTablePessoa;
-begin
-  var FPessoa := TPessoa.Create;
-  dsPadrao.DataSet := FPessoa.ConectarQryPessoa;
 end;
 
 procedure TfrmCadastroPessoa.dbgrdPesquisaCellClick(Column: TColumn);
@@ -148,14 +139,11 @@ end;
 procedure TfrmCadastroPessoa.FormCreate(Sender: TObject);
 begin
   inherited;
-  //LoadTablePessoa;
+  FPessoa := TPessoa.Instance
+  dsPadrao.DataSet := FPessoa.Load;
 end;
 
-procedure TfrmCadastroPessoa.FormShow(Sender: TObject);
-begin
-  inherited;
-  LoadTablePessoa;
-end;
+
 
 end.
 
