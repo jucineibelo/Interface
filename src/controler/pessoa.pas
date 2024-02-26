@@ -99,6 +99,11 @@ type
     property QryPessoa: TFDQuery read FQryPessoa;
   end;
 
+const
+  CAMPO_PESQUISA_VAZIO = 'O campo de pesquisa está vazio!';
+  ERRO_AO_CONECTAR = 'Erro ao conectar banco de dados: ';
+  ERRO_AO_CARREGAR_DADOS = 'Erro ao carregar dados: ';
+
 implementation
 
 uses
@@ -108,15 +113,16 @@ uses
   FireDAC.Comp.UI,
   model.connections;
 
-
 { TPessoa }
 
 function TPessoa.QryConnection: TFDQuery;
 
   function BaseConnection: TDataconnection;
+  var
+    FConexao: TDataConnection;
   begin
-    var FConexao := TDataConnection.Instance;
-    FConexao.SetDatabase('C:\Users\User-J\Desktop\Projetos Delphi\Delphi OI\Interface Pessoa\db\Dados.db');
+    FConexao := TDataConnection.Instance;
+    FConexao.SetDatabase('C:\Users\jucinei.belo\Desktop\Interfaces\db\Dados.db');
     FConexao.SetDriverId('SQLite');
     FConexao.Connect;
     Result := FConexao;
@@ -129,7 +135,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Erro ao conectar ao banco de dados: ' + E.Message);
+      raise Exception.Create(ERRO_AO_CONECTAR + E.Message);
     end;
   end;
 end;
@@ -171,7 +177,7 @@ const
 begin
   if AValue.IsEmpty then
   begin
-    raise Exception.Create('Campo pesquisa está vazio!');
+    raise Exception.Create(CAMPO_PESQUISA_VAZIO);
   end;
 
   FQryPessoa := QryConnection;
@@ -213,7 +219,7 @@ end;
 
 function TPessoa.Insert: IPessoa;
 const
-  SQL_INSERT_PESSOA = 'INSERT INTO Pessoa(nome, dataCadastro, telefone, endereco) VALUES(:nome, :dataCadastro, :telefone, :endereco)';
+  SQL_INSERT_PESSOA = 'insert into pessoa (nome, dataCadastro, telefone, endereco) values(:nome, :dataCadastro, :telefone, :endereco)';
 begin
   FQryPessoa := QryConnection;
   FQryPessoa.Close;
@@ -237,7 +243,7 @@ begin
     Result.SQL.Add(SQL_LOAD_PESSOA);
     Result.Open;
   except
-    raise Exception.Create('Erro ao carregar dados');
+    raise Exception.Create(ERRO_AO_CARREGAR_DADOS);
   end;
 end;
 

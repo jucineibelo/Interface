@@ -25,8 +25,7 @@ type
     //Set
     procedure SetDatabase(const Value: string);
     procedure SetDriverId(const Value: string);
-    procedure ConnectCursorAndDriver;
-
+    //Property
     property Connection: TFDConnection read GetConnection;
     property Database: string read GetDatabase write SetDatabase;
     property DriverId: string read GetDriverId write SetDriverId;
@@ -41,18 +40,11 @@ uses
 
 { TDataConnection }
 
-procedure TDataConnection.ConnectCursorAndDriver;
-begin
-  TFDGUIxWaitCursor.Create(nil);
-  TFDPhysSQLiteDriverLink.Create(nil);
-end;
-
 constructor TDataConnection.Create;
 begin
   FDriverId := EmptyStr;
   FDatabase := EmptyStr;
   FConnection := TFDConnection.Create(nil);
-  ConnectCursorAndDriver;
 end;
 
 destructor TDataConnection.Destroy;
