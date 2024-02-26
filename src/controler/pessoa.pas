@@ -96,7 +96,7 @@ type
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property QryPessoa: TFDQuery read FQryPessoa write FQryPessoa;
+    property QryPessoa: TFDQuery read FQryPessoa;
   end;
 
 implementation
@@ -114,14 +114,12 @@ uses
 function TPessoa.QryConnection: TFDQuery;
 
   function BaseConnection: TDataconnection;
-  var
-    conexao: TDataconnection;
   begin
-    conexao := TDataConnection.Create;
-    conexao.SetDatabase('C:\Users\User-J\Desktop\Projetos Delphi\Delphi OI\Interface Pessoa\db\Dados.db');
-    conexao.SetDriverId('SQLite');
-    conexao.Connect;
-    Result := conexao;
+    var FConexao := TDataConnection.Instance;
+    FConexao.SetDatabase('C:\Users\User-J\Desktop\Projetos Delphi\Delphi OI\Interface Pessoa\db\Dados.db');
+    FConexao.SetDriverId('SQLite');
+    FConexao.Connect;
+    Result := FConexao;
   end;
 
 begin
