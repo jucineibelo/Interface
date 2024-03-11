@@ -36,22 +36,14 @@ type
     function SetCpf(const AValue: string): IPessoa;
     function SetCnpj(const AValue: string): IPessoa;
 
-    //CRUD
-    function Delete(Id: Integer): IPessoa;
-    function Update(Id: Integer): IPessoa;
-    function Find(AValue: string): TDataset;
-    function Insert: IPessoa;
-    function Load: TFDQuery;
-    function QryConnection: TFDQuery;
-
     //Propertys
     property Id: Integer read GetId write PutId;
     property Nome: string read GetNome write PutNome;
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property Cpf: string read GetCpf write SetCpf;
-    property Cnpj: string read GetCnpj write SetCnpj;
+    property Cpf: string read GetCpf write PutCpf;
+    property Cnpj: string read GetCnpj write PutCnpj;
 
   end;
 
@@ -90,14 +82,6 @@ type
     destructor Destroy; override;
     class function Instance: IPessoa;
 
-    //CRUD
-    function Delete(Id: Integer): IPessoa; reintroduce;
-    function Update(Id: Integer): IPessoa; reintroduce;
-    function Find(AValue: string): TDataSet; reintroduce;
-    function Insert: IPessoa; reintroduce;
-    function Load: TFDQuery; reintroduce;
-    function QryConnection: TFDQuery; reintroduce;
-
     //SET
     function SetId(AValue: Integer): IPessoa; reintroduce;
     function SetNome(const AValue: string): IPessoa; reintroduce;
@@ -113,8 +97,8 @@ type
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property Cpf: string read GetCpf write SetCpf;
-    property Cnpj: string read GetCnpj write SetCnpj;
+    property Cpf: string read GetCpf write PutCpf;
+    property Cnpj: string read GetCnpj write PutCnpj;
     property QryPessoa: TFDQuery read FQryPessoa;
   end;
 
@@ -265,7 +249,17 @@ end;
 
 function TPessoa.Load: TFDQuery;
 const
-  SQL_LOAD_PESSOA = 'select id, nome, datacadastro, telefone, endereco from pessoa';
+  SQL_LOAD_PESSOA = ' select                                  ' +
+                    '      id,                                ' +
+                    '      nome,                              ' +
+                    '      dataCadastro,                      ' +
+                    '      telefone,                          ' +
+                    '      endereco,                          ' +
+                    '      case when cpf is not null then cpf ' +
+                    '      	else cnpj                         ' +
+                    '      	end as tipo_pessoa                ' +
+                    ' from pessoa                             ';
+
 begin
   try
     Result := QryConnection;
@@ -353,13 +347,13 @@ begin
   FId := AValue;
 end;
 
-function TPessoa.SetCnpj(const AValue: string);
+function TPessoa.SetCnpj(const AValue: string): IPessoa;
 begin
   PutCnpj(AValue);
   Result := Self;
 end;
 
-function TPessoa.SetCpf(const AValue: string);
+function TPessoa.SetCpf(const AValue: string): IPessoa;
 begin
   PutCpf(AValue);
   Result := Self;
@@ -397,7 +391,7 @@ end;
 
 function TPessoa.Update(Id: Integer): IPessoa;
 const
-  SQL_UPDATE_PESSOA = 'update pessoa set nome = :nome, datacadastro = :datacadastro, telefone = :telefone, endereco = :endereco where id = :id ';
+  SQL_UPDATE_PESSOA = 'update pessoa set nome = :nome, datacadastro = :datacadastro, telefone = :telefone, endereco = :endereco, cpf = :cpf, cnpj = :cnpj where id = :id ';
 begin
   Result := Self;
   FQryPessoa := QryConnection;
@@ -408,6 +402,8 @@ begin
   FQryPessoa.ParamByName('datacadastro').AsDate := FDataCadastro;
   FQryPessoa.ParamByName('telefone').AsString   := FTelefone;
   FQryPessoa.ParamByName('endereco').AsString   := FEndereco;
+  FQryPessoa.ParamByName('cpf').AsString        := FCpf;
+  FQryPessoa.ParamByName('cnpj').AsString       := FCnpj;
   FQryPessoa.ParamByName('id').AsInteger        := Id;
   FQryPessoa.ExecSQL;
 end;

@@ -5,7 +5,8 @@ uses
   pessoa in '..\controler\pessoa.pas',
   view.padrao in 'view.padrao.pas' {frmPadrao},
   view.pessoa in 'view.pessoa.pas' {frmCadastroPessoa},
-  model.connections in '..\model\model.connections.pas';
+  model.connections in '..\model\model.connections.pas',
+  cliente in '..\controler\cliente.pas';
 
 {$R *.res}
 

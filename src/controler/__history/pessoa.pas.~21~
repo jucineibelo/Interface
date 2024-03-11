@@ -36,23 +36,14 @@ type
     function SetCpf(const AValue: string): IPessoa;
     function SetCnpj(const AValue: string): IPessoa;
 
-    //CRUD
-    function Delete(Id: Integer): IPessoa;
-    function Update(Id: Integer): IPessoa;
-    function Find(AValue: string): TDataset;
-    function Insert: IPessoa;
-    function Load: TFDQuery;
-    function QryConnection: TFDQuery;
-
     //Propertys
     property Id: Integer read GetId write PutId;
     property Nome: string read GetNome write PutNome;
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property Cpf: string read GetCpf write SetCpf;
-    property Cnpj: string read GetCnpj write SetCnpj;
-
+    property Cpf: string read GetCpf write PutCpf;
+    property Cnpj: string read GetCnpj write PutCnpj;
   end;
 
 type
@@ -90,14 +81,6 @@ type
     destructor Destroy; override;
     class function Instance: IPessoa;
 
-    //CRUD
-    function Delete(Id: Integer): IPessoa; reintroduce;
-    function Update(Id: Integer): IPessoa; reintroduce;
-    function Find(AValue: string): TDataSet; reintroduce;
-    function Insert: IPessoa; reintroduce;
-    function Load: TFDQuery; reintroduce;
-    function QryConnection: TFDQuery; reintroduce;
-
     //SET
     function SetId(AValue: Integer): IPessoa; reintroduce;
     function SetNome(const AValue: string): IPessoa; reintroduce;
@@ -113,9 +96,8 @@ type
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property Cpf: string read GetCpf write SetCpf;
-    property Cnpj: string read GetCnpj write SetCnpj;
-    property QryPessoa: TFDQuery read FQryPessoa;
+    property Cpf: string read GetCpf write PutCpf;
+    property Cnpj: string read GetCnpj write PutCnpj;
   end;
 
 const
@@ -134,81 +116,18 @@ uses
 
 { TPessoa }
 
-function TPessoa.QryConnection: TFDQuery;
-
-  function BaseConnection: TDataconnection;
-  var
-    FConexao: TDataConnection;
-  begin
-    FConexao := TDataConnection.Instance;
-    FConexao.SetDatabase('C:\Users\jucinei.belo\Desktop\Interfaces\db\Dados.db');
-    FConexao.SetDriverId('SQLite');
-    FConexao.Connect;
-    Result := FConexao;
-  end;
-
-begin
-  Result := TFDQuery.Create(nil);
-  try
-    Result.Connection := BaseConnection.Connection;
-  except
-    on E: Exception do
-    begin
-      raise Exception.Create(ERRO_AO_CONECTAR + E.Message);
-    end;
-  end;
-end;
-
 constructor TPessoa.Create;
 begin
-  FId           := 0;
-  FNome         := EmptyStr;
+  FId := 0;
+  FNome := EmptyStr;
   FDataCadastro := Now;
-  FTelefone     := EmptyStr;
-  FEndereco     := EmptyStr;
+  FTelefone := EmptyStr;
+  FEndereco := EmptyStr;
 end;
 
 destructor TPessoa.Destroy;
 begin
   inherited;
-end;
-
-function TPessoa.Delete(Id: Integer): IPessoa;
-const
-  SQL_DELETE_PESSOA = 'delete from pessoa where id =:id';
-begin
-  Result := Self;
-  FQryPessoa := QryConnection;
-  FQryPessoa.Close;
-  FQryPessoa.SQL.Clear;
-  FQryPessoa.SQL.Add(SQL_DELETE_PESSOA);
-  FQryPessoa.ParamByName('id').AsInteger := Id;
-  FQryPessoa.ExecSQL;
-end;
-
-function TPessoa.Find(AValue: string): TDataSet;
-const
-  SQL_FIND_PESSOA = ' select id, nome, datacadastro, telefone, endereco ' +
-                    ' from pessoa                                       ' +
-                    ' where nome like ''%'' || :nome || ''%''           ' +
-                    ' or telefone like ''%''  || :telefone || ''%''     ' +
-                    ' or endereco like ''%'' || :endereco || ''%''      ';
-begin
-  if AValue.IsEmpty then
-  begin
-    raise Exception.Create(CAMPO_PESQUISA_VAZIO);
-  end;
-
-  FQryPessoa := QryConnection;
-  FQryPessoa.Close;
-  FQryPessoa.SQL.Clear;
-  FQryPessoa.SQL.Add(SQL_FIND_PESSOA);
-  FQryPessoa.ParamByName('nome').AsString     := AValue;
-  FQryPessoa.ParamByName('telefone').AsString := AValue;
-  FQryPessoa.ParamByName('endereco').AsString := AValue;
-  FQryPessoa.Open;
-
-  Result := FQryPessoa;
 end;
 
 function TPessoa.GetNome: string;
@@ -246,38 +165,6 @@ begin
   Result := FId;
 end;
 
-function TPessoa.Insert: IPessoa;
-const
-  SQL_INSERT_PESSOA = 'insert into pessoa (nome, dataCadastro, telefone, endereco) values(:nome, :dataCadastro, :telefone, :endereco)';
-begin
-  FQryPessoa := QryConnection;
-  FQryPessoa.Close;
-  FQryPessoa.SQL.Clear;
-  FQryPessoa.SQL.Text := SQL_INSERT_PESSOA;
-  FQryPessoa.Params.ParamByName('nome').AsString := Fnome;
-  FQryPessoa.Params.ParamByName('DataCadastro').AsDate := FdataCadastro;
-  FQryPessoa.Params.ParamByName('telefone').AsString := Ftelefone;
-  FQryPessoa.Params.ParamByName('endereco').AsString := Fendereco;
-  FQryPessoa.Params.ParamByName('cpf').AsString := FCpf;
-  FQryPessoa.Params.ParamByName('cnpj').AsString := FCnpj;
-  FQryPessoa.ExecSQL;
-end;
-
-function TPessoa.Load: TFDQuery;
-const
-  SQL_LOAD_PESSOA = 'select id, nome, datacadastro, telefone, endereco from pessoa';
-begin
-  try
-    Result := QryConnection;
-    Result.Close;
-    Result.SQL.Clear;
-    Result.SQL.Add(SQL_LOAD_PESSOA);
-    Result.Open;
-  except
-    raise Exception.Create(ERRO_AO_CARREGAR_DADOS);
-  end;
-end;
-
 class function TPessoa.Instance: IPessoa;
 begin
   Result := Self.Create;
@@ -300,7 +187,7 @@ begin
     Exit;
   end;
 
-  Fcnpj := Avalue;
+  Fcnpj := AValue;
 end;
 
 procedure TPessoa.PutCpf(const AValue: string);
@@ -310,7 +197,7 @@ begin
     Exit;
   end;
 
-  FCpf := Avalue;
+  FCpf := AValue;
 end;
 
 procedure TPessoa.PutDataCadastro(const AValue: TDateTime);
@@ -353,13 +240,13 @@ begin
   FId := AValue;
 end;
 
-procedure TPessoa.SetCnpj(const AValue: string);
+function TPessoa.SetCnpj(const AValue: string): IPessoa;
 begin
   PutCnpj(AValue);
   Result := Self;
 end;
 
-procedure TPessoa.SetCpf(const AValue: string);
+function TPessoa.SetCpf(const AValue: string): IPessoa;
 begin
   PutCpf(AValue);
   Result := Self;
@@ -393,23 +280,6 @@ function TPessoa.SetTelefone(const AValue: string): IPessoa;
 begin
   PutTelefone(AValue);
   Result := Self;
-end;
-
-function TPessoa.Update(Id: Integer): IPessoa;
-const
-  SQL_UPDATE_PESSOA = 'update pessoa set nome = :nome, datacadastro = :datacadastro, telefone = :telefone, endereco = :endereco where id = :id ';
-begin
-  Result := Self;
-  FQryPessoa := QryConnection;
-  FQryPessoa.Close;
-  FQryPessoa.SQL.Clear;
-  FQryPessoa.SQL.Add(SQL_UPDATE_PESSOA);
-  FQryPessoa.ParamByName('nome').AsString       := FNome;
-  FQryPessoa.ParamByName('datacadastro').AsDate := FDataCadastro;
-  FQryPessoa.ParamByName('telefone').AsString   := FTelefone;
-  FQryPessoa.ParamByName('endereco').AsString   := FEndereco;
-  FQryPessoa.ParamByName('id').AsInteger        := Id;
-  FQryPessoa.ExecSQL;
 end;
 
 end.

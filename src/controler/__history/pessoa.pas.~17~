@@ -50,8 +50,8 @@ type
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property Cpf: string read GetCpf write SetCpf;
-    property Cnpj: string read GetCnpj write SetCnpj;
+    property Cpf: string read GetCpf write PutCpf;
+    property Cnpj: string read GetCnpj write PutCnpj;
 
   end;
 
@@ -113,8 +113,8 @@ type
     property DataCadastro: TDateTime read GetDataCadastro write PutDataCadastro;
     property Telefone: string read GetTelefone write PutTelefone;
     property Endereco: string read GetEndereco write PutEndereco;
-    property Cpf: string read GetCpf write SetCpf;
-    property Cnpj: string read GetCnpj write SetCnpj;
+    property Cpf: string read GetCpf write PutCpf;
+    property Cnpj: string read GetCnpj write PutCnpj;
     property QryPessoa: TFDQuery read FQryPessoa;
   end;
 
@@ -265,7 +265,17 @@ end;
 
 function TPessoa.Load: TFDQuery;
 const
-  SQL_LOAD_PESSOA = 'select id, nome, datacadastro, telefone, endereco from pessoa';
+  SQL_LOAD_PESSOA = ' select                                  ' +
+                    '      id,                                ' +
+                    '      nome,                              ' +
+                    '      dataCadastro,                      ' +
+                    '      telefone,                          ' +
+                    '      endereco,                          ' +
+                    '      case when cpf is not null then cpf ' +
+                    '      	else cnpj                         ' +
+                    '      	end as tipo_pessoa                ' +
+                    ' from pessoa                             ';
+
 begin
   try
     Result := QryConnection;
@@ -397,7 +407,7 @@ end;
 
 function TPessoa.Update(Id: Integer): IPessoa;
 const
-  SQL_UPDATE_PESSOA = 'update pessoa set nome = :nome, datacadastro = :datacadastro, telefone = :telefone, endereco = :endereco where id = :id ';
+  SQL_UPDATE_PESSOA = 'update pessoa set nome = :nome, datacadastro = :datacadastro, telefone = :telefone, endereco = :endereco, cpf = :cpf, cnpj = :cnpj where id = :id ';
 begin
   Result := Self;
   FQryPessoa := QryConnection;
@@ -408,6 +418,8 @@ begin
   FQryPessoa.ParamByName('datacadastro').AsDate := FDataCadastro;
   FQryPessoa.ParamByName('telefone').AsString   := FTelefone;
   FQryPessoa.ParamByName('endereco').AsString   := FEndereco;
+  FQryPessoa.ParamByName('cpf').AsString        := FCpf;
+  FQryPessoa.ParamByName('cnpj').AsString       := FCnpj;
   FQryPessoa.ParamByName('id').AsInteger        := Id;
   FQryPessoa.ExecSQL;
 end;

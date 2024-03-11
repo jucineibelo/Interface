@@ -1,0 +1,62 @@
+unit cliente;
+
+interface
+
+uses
+  pessoa;
+
+type
+  ICliente = interface(IPessoa)
+    ['{8A97AD14-1C4D-4C71-B3AC-A96AB471AFE2}']
+
+  end;
+
+  TCliente = class(TPessoa)
+  strict private
+
+  public
+        //CRUD
+    function Delete(Id: Integer): IPessoa;
+    function Update(Id: Integer): IPessoa;
+    function Find(AValue: string): TDataset;
+    function Insert: IPessoa;
+    function Load: TFDQuery;
+    function QryConnection: TFDQuery;
+    end;
+
+implementation
+
+{ TCliente }
+
+function TCliente.Delete(Id: Integer): IPessoa;
+begin
+
+end;
+
+function TCliente.Find(AValue: string): TDataset;
+begin
+
+end;
+
+function TCliente.Insert: IPessoa;
+begin
+
+end;
+
+function TCliente.Load: TFDQuery;
+begin
+
+end;
+
+function TCliente.QryConnection: TFDQuery;
+begin
+
+end;
+
+function TCliente.Update(Id: Integer): IPessoa;
+begin
+
+end;
+
+end.
+

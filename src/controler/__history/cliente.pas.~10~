@@ -1,0 +1,150 @@
+unit cliente;
+
+interface
+
+uses
+  pessoa,
+  FireDAC.Comp.Client,
+  Data.DB;
+
+type
+  ICliente = interface(IPessoa)
+    ['{8A97AD14-1C4D-4C71-B3AC-A96AB471AFE2}']
+  end;
+
+  TCliente = class(TPessoa)
+  strict private
+  private
+    FQryPessoa: TFDQuery;
+
+  public
+        //CRUD
+    function Delete(Id: Integer): IPessoa;
+    function Update(Id: Integer): IPessoa;
+    function Find(AValue: string): TDataset;
+    function Insert: IPessoa;
+    function Load: TFDQuery;
+    function QryConnection: TFDQuery;
+    property QryPessoa: TFDQuery read FQryPessoa;
+  end;
+
+implementation
+
+uses
+  model.connections,
+  System.SysUtils;
+
+{ TCliente }
+
+function TCliente.QryConnection: TFDQuery;
+
+  function BaseConnection: TDataconnection;
+  var
+    FConexao: TDataConnection;
+  begin
+    FConexao := TDataConnection.Instance;
+    FConexao.SetDatabase('C:\Users\jucinei.belo\Desktop\Interfaces\db\Dados.db');
+    FConexao.SetDriverId('SQLite');
+    FConexao.Connect;
+    Result := FConexao;
+  end;
+
+begin
+  Result := TFDQuery.Create(nil);
+  try
+    Result.Connection := BaseConnection.Connection;
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create(ERRO_AO_CONECTAR + E.Message);
+    end;
+  end;
+end;
+
+function TCliente.Delete(Id: Integer): IPessoa;
+const
+  SQL_DELETE_PESSOA = 'delete from pessoa where id =:id';
+begin
+  Result := Self;
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Add(SQL_DELETE_PESSOA);
+  FQryPessoa.ParamByName('id').AsInteger := Id;
+  FQryPessoa.ExecSQL;
+end;
+
+function TCliente.Find(AValue: string): TDataSet;
+const
+  SQL_FIND_PESSOA = ' select id, nome, datacadastro, telefone, endereco ' + ' from pessoa                                       ' + ' where nome like ''%'' || :nome || ''%''           ' + ' or telefone like ''%''  || :telefone || ''%''     ' + ' or endereco like ''%'' || :endereco || ''%''      ';
+begin
+  if AValue.IsEmpty then
+  begin
+    raise Exception.Create(CAMPO_PESQUISA_VAZIO);
+  end;
+
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Add(SQL_FIND_PESSOA);
+  FQryPessoa.ParamByName('nome').AsString := AValue;
+  FQryPessoa.ParamByName('telefone').AsString := AValue;
+  FQryPessoa.ParamByName('endereco').AsString := AValue;
+  FQryPessoa.Open;
+
+  Result := FQryPessoa;
+end;
+
+function TCliente.Insert: IPessoa;
+const
+  SQL_INSERT_PESSOA = 'insert into pessoa (nome, dataCadastro, telefone, endereco) values(:nome, :dataCadastro, :telefone, :endereco)';
+begin
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Text := SQL_INSERT_PESSOA;
+  FQryPessoa.Params.ParamByName('nome').AsString := Fnome;
+  FQryPessoa.Params.ParamByName('DataCadastro').AsDate := FdataCadastro;
+  FQryPessoa.Params.ParamByName('telefone').AsString := Ftelefone;
+  FQryPessoa.Params.ParamByName('endereco').AsString := Fendereco;
+  FQryPessoa.Params.ParamByName('cpf').AsString := FCpf;
+  FQryPessoa.Params.ParamByName('cnpj').AsString := FCnpj;
+  FQryPessoa.ExecSQL;
+end;
+
+function TCliente.Load: TFDQuery;
+const
+  SQL_LOAD_PESSOA = ' select                                  ' + '      id,                                ' + '      nome,                              ' + '      dataCadastro,                      ' + '      telefone,                          ' + '      endereco,                          ' + '      case when cpf is not null then cpf ' + '      	else cnpj                         ' + '      	end as tipo_pessoa                ' + ' from pessoa                             ';
+begin
+  try
+    Result := QryConnection;
+    Result.Close;
+    Result.SQL.Clear;
+    Result.SQL.Add(SQL_LOAD_PESSOA);
+    Result.Open;
+  except
+    raise Exception.Create(ERRO_AO_CARREGAR_DADOS);
+  end;
+end;
+
+function TCliente.Update(Id: Integer): IPessoa;
+const
+  SQL_UPDATE_PESSOA = 'update pessoa set nome = :nome, datacadastro = :datacadastro, telefone = :telefone, endereco = :endereco, cpf = :cpf, cnpj = :cnpj where id = :id ';
+begin
+  Result := Self;
+  FQryPessoa := QryConnection;
+  FQryPessoa.Close;
+  FQryPessoa.SQL.Clear;
+  FQryPessoa.SQL.Add(SQL_UPDATE_PESSOA);
+  FQryPessoa.ParamByName('nome').AsString       := FNome;
+  FQryPessoa.ParamByName('datacadastro').AsDate := FDataCadastro;
+  FQryPessoa.ParamByName('telefone').AsString   := FTelefone;
+  FQryPessoa.ParamByName('endereco').AsString   := FEndereco;
+  FQryPessoa.ParamByName('cpf').AsString        := FCpf;
+  FQryPessoa.ParamByName('cnpj').AsString       := FCnpj;
+  FQryPessoa.ParamByName('id').AsInteger        := Id;
+  FQryPessoa.ExecSQL;
+end;
+
+end.
+
