@@ -134,7 +134,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\model\model.connections.pas"/>
-        <DCCReference Include="..\controler\cliente.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
